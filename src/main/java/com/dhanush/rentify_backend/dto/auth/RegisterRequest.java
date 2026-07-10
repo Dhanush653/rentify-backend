@@ -20,6 +20,12 @@ public class RegisterRequest {
     )
     private String phoneNumber;
 
+    @Pattern(
+            regexp = "^[6-9]\\d{9}$",
+            message = "Enter a valid 10-digit Indian mobile number"
+    )
+    private String whatsAppNumber;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Enter a valid email")
     private String email;
