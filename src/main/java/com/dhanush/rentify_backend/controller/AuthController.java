@@ -1,7 +1,10 @@
 package com.dhanush.rentify_backend.controller;
 
+import com.dhanush.rentify_backend.dto.auth.AuthResponse;
+import com.dhanush.rentify_backend.dto.auth.LoginRequest;
 import com.dhanush.rentify_backend.dto.auth.RegisterRequest;
 import com.dhanush.rentify_backend.service.AuthService;
+import com.dhanush.rentify_backend.utils.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +22,15 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResponse<String>> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiResponse<>(HttpStatus.CREATED.value(), "User registered successfully"));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+        AuthResponse response = authService.login(request);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), response));
     }
 }
