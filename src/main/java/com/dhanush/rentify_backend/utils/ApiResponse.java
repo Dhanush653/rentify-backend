@@ -1,20 +1,16 @@
 package com.dhanush.rentify_backend.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiResponse<T> {
 
     private int status;
+    private String message;
     private T data;
 
-    public ApiResponse(int status, T data) {
-        this.status = status;
-        this.data = data;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public T getData() {
-        return data;
-    }
 }

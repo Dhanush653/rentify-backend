@@ -4,12 +4,12 @@ import com.dhanush.rentify_backend.dto.auth.AuthResponse;
 import com.dhanush.rentify_backend.dto.auth.LoginRequest;
 import com.dhanush.rentify_backend.dto.auth.RegisterRequest;
 import com.dhanush.rentify_backend.entity.User;
+import com.dhanush.rentify_backend.exception.InvalidCredentialsException;
+import com.dhanush.rentify_backend.exception.UserAlreadyExistsException;
 import com.dhanush.rentify_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -23,11 +23,11 @@ public class AuthService {
     public void register(RegisterRequest registerRequest) {
 
         if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
-            throw new RuntimeException("Phone Number Already Registered");
+            throw new UserAlreadyExistsException("Phone Number Already Registered");
         }
 
         if (userRepository.existsByPhoneNumber(registerRequest.getEmail())) {
-            throw new RuntimeException("Email Already Registered");
+            throw new UserAlreadyExistsException("Email Already Registered");
         }
 
         User user = new User();
@@ -44,10 +44,10 @@ public class AuthService {
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
-                .orElseThrow(() -> new RuntimeException("Invalid phone number or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid phone number or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid phone number or password");
+            throw new InvalidCredentialsException("Invalid phone number or password");
         }
 
         return new AuthResponse(
