@@ -7,6 +7,7 @@ import com.dhanush.rentify_backend.entity.User;
 import com.dhanush.rentify_backend.exception.InvalidCredentialsException;
 import com.dhanush.rentify_backend.exception.UserAlreadyExistsException;
 import com.dhanush.rentify_backend.repository.UserRepository;
+import com.dhanush.rentify_backend.security.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     public void register(RegisterRequest registerRequest) {
 
@@ -42,7 +46,6 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-
         User user = userRepository.findByPhoneNumber(request.getPhoneNumber())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid phone number or password"));
 
@@ -50,10 +53,8 @@ public class AuthService {
             throw new InvalidCredentialsException("Invalid phone number or password");
         }
 
-        return new AuthResponse(
-                "",
-                user.getFullName(),
-                user.getPhoneNumber()
-        );
+        String token = jwtService.generateToken(request.getPhoneNumber());
+
+        return new AuthResponse(token, user.getFullName(), user.getPhoneNumber());
     }
 }

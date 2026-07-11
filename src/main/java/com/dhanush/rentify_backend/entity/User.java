@@ -1,5 +1,6 @@
 package com.dhanush.rentify_backend.entity;
 
+import com.dhanush.rentify_backend.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,6 +33,9 @@ public class User {
     private String phoneNumber;
 
     private String whatsappNumber;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
     @Column(nullable = false)
     private Boolean active = true;
