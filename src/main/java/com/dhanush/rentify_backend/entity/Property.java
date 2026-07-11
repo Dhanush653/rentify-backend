@@ -40,7 +40,7 @@ public class Property {
     @Column(nullable = false)
     private String city;
 
-    private String locality;
+    private String area;
 
     @Enumerated(EnumType.STRING)
     private PropertyType propertyType;
