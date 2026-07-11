@@ -3,7 +3,6 @@ package com.dhanush.rentify_backend.service;
 import com.dhanush.rentify_backend.dto.auth.RegisterRequest;
 import com.dhanush.rentify_backend.entity.User;
 import com.dhanush.rentify_backend.repository.UserRepository;
-import com.dhanush.rentify_backend.utils.PasswordConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,10 +16,14 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void registration(RegisterRequest registerRequest) {
+    public void register(RegisterRequest registerRequest) {
 
         if (userRepository.existsByPhoneNumber(registerRequest.getPhoneNumber())) {
-            throw new RuntimeException("User Already Exist");
+            throw new RuntimeException("Phone Number Already Registered");
+        }
+
+        if (userRepository.existsByPhoneNumber(registerRequest.getEmail())) {
+            throw new RuntimeException("Email Already Registered");
         }
 
         User user = new User();

@@ -1,4 +1,4 @@
-package com.dhanush.rentify_backend.utils;
+package com.dhanush.rentify_backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
