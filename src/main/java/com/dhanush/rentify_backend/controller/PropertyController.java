@@ -30,14 +30,25 @@ public class PropertyController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<PropertyResponse>>> getAllProperties(PropertySearchRequest request) {
-
         List<PropertyResponse> response = propertyService.getAllProperties(request);
-        return ResponseEntity.ok(
-                new ApiResponse<>(
-                        HttpStatus.OK.value(),
-                        "Properties fetched successfully",
-                        response
-                )
-        );
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Properties fetched successfully", response));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<PropertyResponse>> getPropertyById(@PathVariable Long id) {
+        PropertyResponse response = propertyService.getPropertyById(id);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Property fetched successfully", response));
+    }
+
+    @GetMapping("/my-properties")
+    public ResponseEntity<ApiResponse<List<PropertyResponse>>> getMyProperties() {
+        List<PropertyResponse> response = propertyService.getMyProperties();
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Properties fetched successfully", response));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<PropertyResponse>> updateProperty(@PathVariable Long id, @Valid @RequestBody CreatePropertyRequest request) {
+        PropertyResponse response = propertyService.updateProperty(id, request);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Property updated successfully",response));
     }
 }
