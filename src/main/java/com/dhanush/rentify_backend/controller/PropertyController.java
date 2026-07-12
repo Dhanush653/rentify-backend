@@ -61,4 +61,10 @@ public class PropertyController {
         propertyService.incrementContactCount(id);
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(),"Contact count updated successfully",null));
     }
+
+    @PostMapping("/{propertyId}/images")
+    public ResponseEntity<ApiResponse<List<PropertyImageResponse>>> uploadImages(@PathVariable Long propertyId, @RequestParam("files") List<MultipartFile> files) {
+        List<PropertyImageResponse> response = propertyService.uploadPropertyImages(propertyId, files);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Images uploaded successfully", response));
+    }
 }

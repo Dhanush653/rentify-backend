@@ -39,11 +39,6 @@ public class PropertyService {
     private SupabaseConfig supabaseConfig;
 
     public PropertyDetailsResponse createProperty(CreatePropertyRequest request, List<MultipartFile> files) {
-        System.out.println("Title: " + request.getTitle());
-        System.out.println("Rent: " + request.getRent());
-        System.out.println("City: " + request.getCity());
-        System.out.println("Property Type: " + request.getPropertyType());
-        System.out.println("Files: " + (files == null ? 0 : files.size()));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String phoneNumber = authentication.getName();
@@ -232,6 +227,50 @@ public class PropertyService {
                 .toList();
 
         response.setImageUrls(imageUrls);
+        return response;
+    }
+
+    public List<PropertyImageResponse> uploadPropertyImages(Long propertyId, List<MultipartFile> files) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String phoneNumber = authentication.getName();
+
+        User loggedInUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+
+        if (!property.getOwner().getId().equals(loggedInUser.getId())) {
+            throw new RuntimeException("You are not allowed to upload images");
+        }
+
+        int displayOrder = property.getImages().size() + 1;
+
+        for (MultipartFile file : files) {
+            String fileName = supabaseStorageService.uploadImage(file);
+            PropertyImage image = new PropertyImage();
+            image.setProperty(property);
+            image.setImageUrl(fileName);
+            image.setDisplayOrder(displayOrder++);
+
+            propertyImageRepository.save(image);
+        }
+
+        property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+
+        return property.getImages()
+                .stream()
+                .sorted(Comparator.comparing(PropertyImage::getDisplayOrder))
+                .map(this::mapToPropertyImageResponse)
+                .toList();
+    }
+
+    private PropertyImageResponse mapToPropertyImageResponse(PropertyImage image) {
+        PropertyImageResponse response = new PropertyImageResponse();
+        response.setId(image.getId());
+        response.setImageUrl(buildImageUrl(image.getImageUrl()));
+        response.setDisplayOrder(image.getDisplayOrder());
         return response;
     }
 }

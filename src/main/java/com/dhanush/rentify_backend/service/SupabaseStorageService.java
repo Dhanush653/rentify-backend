@@ -1,5 +1,8 @@
 package com.dhanush.rentify_backend.service;
 
+import com.dhanush.rentify_backend.dto.property.PropertyImageResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.dhanush.rentify_backend.config.SupabaseConfig;
@@ -13,6 +16,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.UUID;
 
 @Service
