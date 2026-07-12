@@ -134,13 +134,13 @@ public class PropertyService {
         String phoneNumber = authentication.getName();
 
         User loggedInUser = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Property property = propertyRepository.findById(propertyId)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
 
         if (!property.getOwner().getId().equals(loggedInUser.getId())) {
-            throw new ResourceNotFoundException("You are not allowed to update this property");
+            throw new RuntimeException("You are not allowed to update this property");
         }
 
         property.setTitle(request.getTitle());
@@ -153,5 +153,21 @@ public class PropertyService {
         Property updatedProperty = propertyRepository.save(property);
 
         return mapToPropertyResponse(updatedProperty);
+    }
+
+    public void deleteProperty(Long propertyId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String phoneNumber = authentication.getName();
+        User loggedInUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+
+        if (!loggedInUser.getId().equals(property.getOwner().getId())) {
+            throw new RuntimeException("You are not allowed to delete this property");
+        }
+
+        propertyRepository.deleteById(propertyId);
     }
 }

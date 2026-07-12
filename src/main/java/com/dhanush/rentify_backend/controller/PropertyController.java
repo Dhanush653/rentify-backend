@@ -4,6 +4,7 @@ import com.dhanush.rentify_backend.dto.property.CreatePropertyRequest;
 import com.dhanush.rentify_backend.dto.property.PropertyResponse;
 import com.dhanush.rentify_backend.dto.property.PropertySearchRequest;
 import com.dhanush.rentify_backend.entity.enums.PropertyType;
+import com.dhanush.rentify_backend.repository.PropertyRepository;
 import com.dhanush.rentify_backend.service.PropertyService;
 import com.dhanush.rentify_backend.utils.ApiResponse;
 import jakarta.validation.Valid;
@@ -21,6 +22,8 @@ public class PropertyController {
 
     @Autowired
     private PropertyService propertyService;
+    @Autowired
+    private PropertyRepository propertyRepository;
 
     @PostMapping
     public ResponseEntity<ApiResponse<PropertyResponse>> createProperty(@Valid @RequestBody CreatePropertyRequest request) {
@@ -50,5 +53,11 @@ public class PropertyController {
     public ResponseEntity<ApiResponse<PropertyResponse>> updateProperty(@PathVariable Long id, @Valid @RequestBody CreatePropertyRequest request) {
         PropertyResponse response = propertyService.updateProperty(id, request);
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Property updated successfully",response));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteProperty(@PathVariable Long propertyId) {
+        propertyService.deleteProperty(propertyId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Property deleted successfully", null));
     }
 }
