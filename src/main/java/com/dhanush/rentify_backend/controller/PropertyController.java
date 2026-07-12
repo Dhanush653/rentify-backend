@@ -1,10 +1,7 @@
 package com.dhanush.rentify_backend.controller;
 
 import com.dhanush.rentify_backend.dto.property.*;
-import com.dhanush.rentify_backend.entity.enums.PropertyType;
-import com.dhanush.rentify_backend.repository.PropertyRepository;
 import com.dhanush.rentify_backend.service.PropertyService;
-import com.dhanush.rentify_backend.service.SupabaseStorageService;
 import com.dhanush.rentify_backend.utils.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +19,6 @@ public class PropertyController {
 
     @Autowired
     private PropertyService propertyService;
-
-    @Autowired
-    private SupabaseStorageService supabaseStorageService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<PropertyDetailsResponse>> createProperty(@ModelAttribute CreatePropertyRequest request, @RequestParam(value = "files", required = false) List<MultipartFile> files) {
@@ -60,5 +54,11 @@ public class PropertyController {
     public ResponseEntity<ApiResponse<String>> deleteProperty(@PathVariable Long propertyId) {
         propertyService.deleteProperty(propertyId);
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Property deleted successfully", null));
+    }
+
+    @PostMapping("/{id}/contact")
+    public ResponseEntity<ApiResponse<Void>> contactOwner(@PathVariable Long id) {
+        propertyService.incrementContactCount(id);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(),"Contact count updated successfully",null));
     }
 }

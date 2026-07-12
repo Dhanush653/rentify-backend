@@ -53,6 +53,12 @@ public class Property {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private Integer viewCount = 0;
+
+    @Column(nullable = false)
+    private Integer contactCount = 0;
+
     @OneToMany(
             mappedBy = "property",
             cascade = CascadeType.ALL,

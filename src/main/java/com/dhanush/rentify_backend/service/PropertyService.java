@@ -39,6 +39,11 @@ public class PropertyService {
     private SupabaseConfig supabaseConfig;
 
     public PropertyDetailsResponse createProperty(CreatePropertyRequest request, List<MultipartFile> files) {
+        System.out.println("Title: " + request.getTitle());
+        System.out.println("Rent: " + request.getRent());
+        System.out.println("City: " + request.getCity());
+        System.out.println("Property Type: " + request.getPropertyType());
+        System.out.println("Files: " + (files == null ? 0 : files.size()));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String phoneNumber = authentication.getName();
@@ -159,6 +164,14 @@ public class PropertyService {
         }
 
         propertyRepository.delete(property);
+    }
+
+    public void incrementContactCount(Long propertyId) {
+        Property property = propertyRepository.findById(propertyId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Property not found"));
+        property.setContactCount(property.getContactCount() + 1);
+        propertyRepository.save(property);
     }
 
     private String buildImageUrl(String fileName) {
