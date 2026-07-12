@@ -1,6 +1,5 @@
 package com.dhanush.rentify_backend.dto.property;
 
-import com.dhanush.rentify_backend.entity.enums.ListingStatus;
 import com.dhanush.rentify_backend.entity.enums.PropertyType;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,17 +8,13 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class PropertyResponse {
+public class PropertyListResponse {
 
     private Long id;
 
     private String title;
 
-    private String description;
-
     private BigDecimal rent;
-
-    private BigDecimal deposit;
 
     private String city;
 
@@ -27,9 +22,6 @@ public class PropertyResponse {
 
     private PropertyType propertyType;
 
-    private ListingStatus status;
+    private String thumbnail;
 
-    private String ownerName;
-
-    private String ownerPhone;
 }

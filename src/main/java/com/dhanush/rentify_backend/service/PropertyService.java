@@ -1,21 +1,23 @@
 package com.dhanush.rentify_backend.service;
 
-import com.dhanush.rentify_backend.dto.property.CreatePropertyRequest;
-import com.dhanush.rentify_backend.dto.property.PropertyResponse;
-import com.dhanush.rentify_backend.dto.property.PropertySearchRequest;
+import com.dhanush.rentify_backend.config.SupabaseConfig;
+import com.dhanush.rentify_backend.dto.property.*;
 import com.dhanush.rentify_backend.entity.Property;
+import com.dhanush.rentify_backend.entity.PropertyImage;
 import com.dhanush.rentify_backend.entity.User;
 import com.dhanush.rentify_backend.entity.enums.ListingStatus;
-import com.dhanush.rentify_backend.entity.enums.PropertyType;
 import com.dhanush.rentify_backend.exception.ResourceNotFoundException;
+import com.dhanush.rentify_backend.repository.PropertyImageRepository;
 import com.dhanush.rentify_backend.repository.PropertyRepository;
 import com.dhanush.rentify_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -27,11 +29,19 @@ public class PropertyService {
     @Autowired
     private PropertyRepository propertyRepository;
 
-    public PropertyResponse createProperty(CreatePropertyRequest request) {
+    @Autowired
+    private PropertyImageRepository propertyImageRepository;
+
+    @Autowired
+    private SupabaseStorageService supabaseStorageService;
+
+    @Autowired
+    private SupabaseConfig supabaseConfig;
+
+    public PropertyDetailsResponse createProperty(CreatePropertyRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String phoneNumber = authentication.getName();
-
         User owner = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -49,24 +59,22 @@ public class PropertyService {
         property.setExpiresAt(LocalDateTime.now().plusDays(30));
         Property savedProperty = propertyRepository.save(property);
 
-        PropertyResponse response = new PropertyResponse();
+        if (files != null && !files.isEmpty()) {
+            for (int i = 0; i < files.size(); i++) {
+                String imageUrl = supabaseStorageService.uploadImage(files.get(i));
 
-        response.setId(savedProperty.getId());
-        response.setTitle(savedProperty.getTitle());
-        response.setDescription(savedProperty.getDescription());
-        response.setRent(savedProperty.getRent());
-        response.setDeposit(savedProperty.getDeposit());
-        response.setCity(savedProperty.getCity());
-        response.setArea(savedProperty.getArea());
-        response.setPropertyType(savedProperty.getPropertyType());
-        response.setStatus(savedProperty.getStatus());
-        response.setOwnerName(owner.getFullName());
-        response.setOwnerPhone(owner.getPhoneNumber());
+                PropertyImage image = new PropertyImage();
+                image.setProperty(savedProperty);
+                image.setImageUrl(imageUrl);
+                image.setDisplayOrder(i + 1);
+                propertyImageRepository.save(image);
+            }
+        }
 
-        return response;
+        return mapToPropertyDetailsResponse(savedProperty);
     }
 
-    public List<PropertyResponse> getAllProperties(PropertySearchRequest request) {
+    public List<PropertyListResponse> getAllProperties(PropertySearchRequest request) {
         String city = request.getCity();
         String area = request.getArea();
 
@@ -87,37 +95,19 @@ public class PropertyService {
         );
 
         return properties.stream()
-                .map(this::mapToPropertyResponse)
+                .map(this::mapToPropertyListResponse)
                 .toList();
     }
 
-    public PropertyResponse getPropertyById(Long id) {
+    public PropertyDetailsResponse getPropertyById(Long id) {
         Property property = propertyRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Property not found"));
+                        new ResourceNotFoundException("Property not found"));
 
-        return mapToPropertyResponse(property);
+        return mapToPropertyDetailsResponse(property);
     }
 
-    private PropertyResponse mapToPropertyResponse(Property property) {
-        PropertyResponse response = new PropertyResponse();
-
-        response.setId(property.getId());
-        response.setTitle(property.getTitle());
-        response.setDescription(property.getDescription());
-        response.setRent(property.getRent());
-        response.setDeposit(property.getDeposit());
-        response.setCity(property.getCity());
-        response.setArea(property.getArea());
-        response.setPropertyType(property.getPropertyType());
-        response.setStatus(property.getStatus());
-        response.setOwnerName(property.getOwner().getFullName());
-        response.setOwnerPhone(property.getOwner().getPhoneNumber());
-
-        return response;
-    }
-
-    public List<PropertyResponse> getMyProperties() {
+    public List<PropertyListResponse> getMyProperties() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String phoneNumber = authentication.getName();
         User user = userRepository.findByPhoneNumber(phoneNumber)
@@ -125,11 +115,11 @@ public class PropertyService {
         List<Property> properties = propertyRepository.findByOwner(user);
 
         return properties.stream()
-                .map(this::mapToPropertyResponse)
+                .map(this::mapToPropertyListResponse)
                 .toList();
     }
 
-    public PropertyResponse updateProperty(Long propertyId, CreatePropertyRequest request) {
+    public PropertyDetailsResponse updateProperty(Long propertyId, CreatePropertyRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String phoneNumber = authentication.getName();
 
@@ -152,7 +142,7 @@ public class PropertyService {
         property.setPropertyType(request.getPropertyType());
         Property updatedProperty = propertyRepository.save(property);
 
-        return mapToPropertyResponse(updatedProperty);
+        return mapToPropertyDetailsResponse(updatedProperty);
     }
 
     public void deleteProperty(Long propertyId) {
@@ -168,6 +158,67 @@ public class PropertyService {
             throw new RuntimeException("You are not allowed to delete this property");
         }
 
-        propertyRepository.deleteById(propertyId);
+        propertyRepository.delete(property);
+    }
+
+    private String buildImageUrl(String fileName) {
+        return supabaseConfig.getUrl()
+                + "/storage/v1/object/public/"
+                + supabaseConfig.getBucket()
+                + "/"
+                + fileName;
+    }
+
+    private PropertyListResponse mapToPropertyListResponse(Property property) {
+        PropertyListResponse response = new PropertyListResponse();
+
+        response.setId(property.getId());
+        response.setTitle(property.getTitle());
+        response.setRent(property.getRent());
+        response.setCity(property.getCity());
+        response.setArea(property.getArea());
+        response.setPropertyType(property.getPropertyType());
+
+        String thumbnail = null;
+
+        if (property.getImages() != null && !property.getImages().isEmpty()) {
+            PropertyImage firstImage = property.getImages()
+                    .stream()
+                    .sorted(Comparator.comparing(PropertyImage::getDisplayOrder))
+                    .findFirst()
+                    .orElse(null);
+
+            if (firstImage != null) {
+                thumbnail = buildImageUrl(firstImage.getImageUrl());
+            }
+        }
+        response.setThumbnail(thumbnail);
+
+        return response;
+    }
+
+    private PropertyDetailsResponse mapToPropertyDetailsResponse(Property property) {
+        PropertyDetailsResponse response = new PropertyDetailsResponse();
+
+        response.setId(property.getId());
+        response.setTitle(property.getTitle());
+        response.setDescription(property.getDescription());
+        response.setRent(property.getRent());
+        response.setDeposit(property.getDeposit());
+        response.setCity(property.getCity());
+        response.setArea(property.getArea());
+        response.setPropertyType(property.getPropertyType());
+        response.setStatus(property.getStatus());
+        response.setOwnerName(property.getOwner().getFullName());
+        response.setOwnerPhone(property.getOwner().getPhoneNumber());
+
+        List<String> imageUrls = property.getImages()
+                .stream()
+                .sorted(Comparator.comparing(PropertyImage::getDisplayOrder))
+                .map(image -> buildImageUrl(image.getImageUrl()))
+                .toList();
+
+        response.setImageUrls(imageUrls);
+        return response;
     }
 }
