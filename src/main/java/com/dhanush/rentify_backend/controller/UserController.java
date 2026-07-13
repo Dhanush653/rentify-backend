@@ -1,5 +1,6 @@
 package com.dhanush.rentify_backend.controller;
 
+import com.dhanush.rentify_backend.dto.user.ChangePasswordRequest;
 import com.dhanush.rentify_backend.dto.user.UpdateProfileRequest;
 import com.dhanush.rentify_backend.dto.user.UserProfileResponse;
 import com.dhanush.rentify_backend.service.UserService;
@@ -23,9 +24,15 @@ public class UserController {
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Profile fetched successfully", response));
     }
 
-    @PutMapping("profile")
+    @PutMapping("/profile")
     public ResponseEntity<ApiResponse<UserProfileResponse>> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
         UserProfileResponse response = userService.updateUserProfile(request);
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Profile updated successfully", response));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        userService.changePassword(request);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Password changed successfully", null));
     }
 }
