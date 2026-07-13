@@ -67,4 +67,10 @@ public class PropertyController {
         List<PropertyImageResponse> response = propertyService.uploadPropertyImages(propertyId, files);
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Images uploaded successfully", response));
     }
+
+    @DeleteMapping("/images/{imageId}")
+    public ResponseEntity<ApiResponse<Void>> deletePropertyImage(@PathVariable Long imageId) {
+        propertyService.deletePropertyImage(imageId);
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Image deleted successfully", null));
+    }
 }

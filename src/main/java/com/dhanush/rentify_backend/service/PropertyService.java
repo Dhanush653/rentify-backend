@@ -273,4 +273,23 @@ public class PropertyService {
         response.setDisplayOrder(image.getDisplayOrder());
         return response;
     }
+
+    public void deletePropertyImage(Long imageId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String phoneNumber = authentication.getName();
+
+        User loggedInUser = userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        PropertyImage image = propertyImageRepository.findById(imageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
+
+        Property property = image.getProperty();
+        if (!property.getOwner().getId().equals(loggedInUser.getId())) {
+            throw new RuntimeException("You are not allowed to delete this image");
+        }
+
+        supabaseStorageService.deleteImage(image.getImageUrl());
+        propertyImageRepository.delete(image);
+    }
 }
