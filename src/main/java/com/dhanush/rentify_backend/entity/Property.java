@@ -59,10 +59,24 @@ public class Property {
     @Column(nullable = false)
     private Integer contactCount = 0;
 
+    @Column(precision = 10, scale = 7)
+    private BigDecimal latitude;
+
+    @Column(precision = 10, scale = 7)
+    private BigDecimal longitude;
+
     @OneToMany(
             mappedBy = "property",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<PropertyImage> images = new ArrayList<>();
+
+    @OneToOne(
+            mappedBy = "property",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private PropertyFeatures features;
 }

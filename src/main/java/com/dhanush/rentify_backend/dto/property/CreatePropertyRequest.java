@@ -1,6 +1,7 @@
 package com.dhanush.rentify_backend.dto.property;
 
 import com.dhanush.rentify_backend.entity.enums.PropertyType;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -29,4 +30,14 @@ public class CreatePropertyRequest {
 
     @NotNull
     private PropertyType propertyType;
+
+    @NotNull
+    private BigDecimal latitude;
+
+    @NotNull
+    private BigDecimal longitude;
+
+    @Valid
+    @NotNull
+    private Features features;
 }

@@ -21,7 +21,7 @@ public class PropertyController {
     private PropertyService propertyService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<PropertyDetailsResponse>> createProperty(@ModelAttribute CreatePropertyRequest request, @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+    public ResponseEntity<ApiResponse<PropertyDetailsResponse>> createProperty(@Valid @ModelAttribute CreatePropertyRequest request, @RequestParam(value = "files", required = false) List<MultipartFile> files) {
         PropertyDetailsResponse response = propertyService.createProperty(request, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>(HttpStatus.CREATED.value(),"Property created successfully",response));
     }

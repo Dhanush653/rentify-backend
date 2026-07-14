@@ -24,4 +24,8 @@ public class PropertyListResponse {
 
     private String thumbnail;
 
+    private BigDecimal latitude;
+
+    private BigDecimal longitude;
+
 }

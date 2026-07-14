@@ -36,4 +36,13 @@ public class PropertyDetailsResponse {
 
     private List<String> imageUrls;
 
+    private Integer viewCount;
+
+    private Integer contactCount;
+
+    private BigDecimal latitude;
+
+    private BigDecimal longitude;
+
+    private Features features;
 }
