@@ -24,8 +24,10 @@ public class PropertyListResponse {
 
     private String thumbnail;
 
-    private BigDecimal latitude;
+    private Integer bedRooms;
 
-    private BigDecimal longitude;
+    private Integer bathRooms;
+
+    private Boolean isParkingAvailable;
 
 }

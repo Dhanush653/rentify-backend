@@ -12,6 +12,7 @@ import com.dhanush.rentify_backend.repository.PropertyImageRepository;
 import com.dhanush.rentify_backend.repository.PropertyRepository;
 import com.dhanush.rentify_backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -120,11 +121,17 @@ public class PropertyService {
                         new ResourceNotFoundException("Property not found"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNumber = authentication.getName();
-        User user = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = null;
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            user = userRepository.findByPhoneNumber(authentication.getName())
+                    .orElse(null);
+        }
 
-        if (!user.getId().equals(property.getOwner().getId())) {
+        // Only count a view when the viewer is someone other than the owner
+        // (anonymous / not-logged-in viewers always count as a view).
+        if (user == null || !user.getId().equals(property.getOwner().getId())) {
             property.setViewCount(property.getViewCount() + 1);
             property = propertyRepository.save(property);
         }
@@ -295,9 +302,13 @@ public class PropertyService {
         response.setRent(property.getRent());
         response.setCity(property.getCity());
         response.setArea(property.getArea());
-        response.setLatitude(property.getLatitude());
-        response.setLongitude(property.getLongitude());
         response.setPropertyType(property.getPropertyType());
+        response.setBathRooms(property.getFeatures().getBathrooms());
+        response.setBedRooms(property.getFeatures().getBedrooms());
+
+        if (property.getFeatures().getBikeParking() || property.getFeatures().getCarParking()) {
+            response.setIsParkingAvailable(true);
+        }
 
         String thumbnail = null;
 
