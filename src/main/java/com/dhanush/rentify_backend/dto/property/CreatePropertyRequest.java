@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -36,6 +37,9 @@ public class CreatePropertyRequest {
 
     @NotNull
     private BigDecimal longitude;
+
+    @NotNull
+    private LocalDateTime expiresAt;
 
     @Valid
     @NotNull

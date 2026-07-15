@@ -60,7 +60,7 @@ public class PropertyService {
         property.setArea(request.getArea());
         property.setPropertyType(request.getPropertyType());
         property.setStatus(ListingStatus.ACTIVE);
-        property.setExpiresAt(LocalDateTime.now().plusDays(30));
+        property.setExpiresAt(request.getExpiresAt());
         property.setLatitude(request.getLatitude());
         property.setLongitude(request.getLongitude());
 
