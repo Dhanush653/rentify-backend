@@ -34,6 +34,8 @@ public class PropertyDetailsResponse {
 
     private String ownerPhone;
 
+    private String whatsAppNumber;
+
     private List<String> imageUrls;
 
     private Integer viewCount;

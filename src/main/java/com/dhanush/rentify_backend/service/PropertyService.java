@@ -129,8 +129,6 @@ public class PropertyService {
                     .orElse(null);
         }
 
-        // Only count a view when the viewer is someone other than the owner
-        // (anonymous / not-logged-in viewers always count as a view).
         if (user == null || !user.getId().equals(property.getOwner().getId())) {
             property.setViewCount(property.getViewCount() + 1);
             property = propertyRepository.save(property);
@@ -346,6 +344,7 @@ public class PropertyService {
         response.setStatus(property.getStatus());
         response.setOwnerName(property.getOwner().getFullName());
         response.setOwnerPhone(property.getOwner().getPhoneNumber());
+        response.setWhatsAppNumber(property.getOwner().getWhatsappNumber());
 
         if (property.getFeatures() != null) {
             response.setFeatures(mapToFeatures(property.getFeatures()));
