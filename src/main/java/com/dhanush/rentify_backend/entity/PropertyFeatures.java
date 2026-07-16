@@ -18,14 +18,8 @@ public class PropertyFeatures {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "property_id", nullable = false, unique = true)
+    @JoinColumn(name = "property_id", nullable = false)
     private Property property;
-
-    private Integer bedrooms;
-
-    private Integer bathrooms;
-
-    private Integer balconies;
 
     private Integer builtUpArea;
 
@@ -33,20 +27,14 @@ public class PropertyFeatures {
 
     private Integer totalFloors;
 
+    private Integer propertyAge;
+
     private Boolean carParking;
 
     private Boolean bikeParking;
 
     @Enumerated(EnumType.STRING)
-    private FurnishingType furnishingType;
-
-    @Enumerated(EnumType.STRING)
-    private PreferredTenant preferredTenant;
-
-    @Enumerated(EnumType.STRING)
     private WaterSupply waterSupply;
-
-    private Integer propertyAge;
 
     private Boolean lift;
 
@@ -60,5 +48,23 @@ public class PropertyFeatures {
 
     private Boolean cctv;
 
+    private Integer bedrooms;
+
+    private Integer bathrooms;
+
+    private Integer balconies;
+
+    @Enumerated(EnumType.STRING)
+    private FurnishingType furnishingType;
+
+    @Enumerated(EnumType.STRING)
+    private PreferredTenant preferredTenant;
+
     private Boolean petFriendly;
+
+    private Boolean washroomAvailable;
+
+    private Boolean mainRoadFacing;
+
+    private Boolean cornerShop;
 }

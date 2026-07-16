@@ -51,8 +51,8 @@ public class PropertyController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteProperty(@PathVariable Long propertyId) {
-        propertyService.deleteProperty(propertyId);
+    public ResponseEntity<ApiResponse<String>> deleteProperty(@PathVariable Long id) {
+        propertyService.deleteProperty(id);
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Property deleted successfully", null));
     }
 

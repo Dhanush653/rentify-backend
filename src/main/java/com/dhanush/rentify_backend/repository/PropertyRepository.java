@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
@@ -31,7 +32,8 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
             AND (:propertyType IS NULL OR p.propertyType = :propertyType)
             AND (:minRent IS NULL OR p.rent >= :minRent)
             AND (:maxRent IS NULL OR p.rent <= :maxRent)
+            AND (p.expiresAt IS NULL OR p.expiresAt > :now)
             ORDER BY p.createdAt DESC
             """)
-    List<Property> searchProperties(String city, String area, PropertyType propertyType, BigDecimal minRent, BigDecimal maxRent);
+    List<Property> searchProperties(String city, String area, PropertyType propertyType, BigDecimal minRent, BigDecimal maxRent, LocalDateTime now);
 }

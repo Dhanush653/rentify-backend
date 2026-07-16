@@ -106,7 +106,8 @@ public class PropertyService {
                 area,
                 request.getPropertyType(),
                 request.getMinRent(),
-                request.getMaxRent()
+                request.getMaxRent(),
+                LocalDateTime.now()
         );
 
         return properties.stream()
@@ -251,6 +252,10 @@ public class PropertyService {
         features.setSecurity(request.getSecurity());
         features.setCctv(request.getCctv());
         features.setPetFriendly(request.getPetFriendly());
+
+        features.setWashroomAvailable(request.getWashroomAvailable());
+        features.setMainRoadFacing(request.getMainRoadFacing());
+        features.setCornerShop(request.getCornerShop());
     }
 
     private Features mapToFeatures(PropertyFeatures features) {
@@ -280,6 +285,10 @@ public class PropertyService {
         response.setSecurity(features.getSecurity());
         response.setCctv(features.getCctv());
         response.setPetFriendly(features.getPetFriendly());
+
+        response.setWashroomAvailable(features.getWashroomAvailable());
+        response.setMainRoadFacing(features.getMainRoadFacing());
+        response.setCornerShop(features.getCornerShop());
 
         return response;
     }

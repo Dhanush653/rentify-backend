@@ -35,4 +35,8 @@ public class Features {
     private Boolean security;
     private Boolean cctv;
     private Boolean petFriendly;
+
+    private Boolean washroomAvailable;
+    private Boolean mainRoadFacing;
+    private Boolean cornerShop;
 }
