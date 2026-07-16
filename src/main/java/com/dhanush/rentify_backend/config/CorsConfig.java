@@ -18,7 +18,8 @@ public class CorsConfig {
 
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of(
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "https://rentify-frontend-delta.vercel.app"
         ));
 
         config.setAllowedHeaders(List.of("*"));
