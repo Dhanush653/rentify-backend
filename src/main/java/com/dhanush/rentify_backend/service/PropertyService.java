@@ -313,7 +313,13 @@ public class PropertyService {
         response.setBathRooms(property.getFeatures().getBathrooms());
         response.setBedRooms(property.getFeatures().getBedrooms());
 
-        if (property.getFeatures().getBikeParking() || property.getFeatures().getCarParking()) {
+        response.setFurnishingType(property.getFeatures().getFurnishingType());
+        response.setWashroomAvailable(property.getFeatures().getWashroomAvailable());
+        response.setMainRoadFacing(property.getFeatures().getMainRoadFacing());
+        response.setCornerShop(property.getFeatures().getCornerShop());
+
+        if (Boolean.TRUE.equals(property.getFeatures().getBikeParking())
+                || Boolean.TRUE.equals(property.getFeatures().getCarParking())) {
             response.setIsParkingAvailable(true);
         }
 

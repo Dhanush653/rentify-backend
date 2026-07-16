@@ -1,5 +1,6 @@
 package com.dhanush.rentify_backend.dto.property;
 
+import com.dhanush.rentify_backend.entity.enums.FurnishingType;
 import com.dhanush.rentify_backend.entity.enums.PropertyType;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,5 +30,13 @@ public class PropertyListResponse {
     private Integer bathRooms;
 
     private Boolean isParkingAvailable;
+
+    private FurnishingType furnishingType;
+
+    private Boolean washroomAvailable;
+
+    private Boolean mainRoadFacing;
+
+    private Boolean cornerShop;
 
 }
